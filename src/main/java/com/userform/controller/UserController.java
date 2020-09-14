@@ -95,7 +95,7 @@ public class UserController {
 
     userService.save(userForm);
 
-    securityService.autologin(userForm.getUsername(), userForm.getPasswordConfirm());
+   // securityService.autologin(userForm.getUsername(), userForm.getPasswordConfirm());
 
     try {
       String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();;
@@ -116,8 +116,16 @@ public class UserController {
     if (logout != null)
       model.addAttribute("message", "You have been logged out successfully.");
 
+    model.addAttribute("newUser", new User());
     return "login";
   }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String loginInAccount(@Valid @ModelAttribute User newUser) {
+        if (newUser != null)
+            securityService.autologin(newUser.getUsername(), newUser.getPasswordConfirm());
+        return "welcome";
+    }
 
   @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
   public String confirmRegistration(HttpServletRequest request, Model model, HttpSession session, @RequestParam(name="token") String token) {
@@ -174,9 +182,9 @@ public class UserController {
 
     @RequestMapping(value = {"/forgetPassword"}, method = RequestMethod.POST)
     public String postForgetPassword(Model model, HttpServletRequest request, @RequestParam(required=false,name="email") String userEmail) {
-        final User user = userService.findUserByEmail(userEmail);
+        User user = userService.findUserByEmail(userEmail);
         if (user != null) {
-            final String token = UUID.randomUUID().toString();
+            String token = UUID.randomUUID().toString();
             userService.createPasswordResetTokenForUser(user, token);
             mailSender.send(constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
             model.addAttribute("message", messages.getMessage("message.resetPasswordEmail", null, request.getLocale()));
@@ -204,13 +212,13 @@ public class UserController {
      * These are util methods to constract tokens
      *
      */
-    private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
+    private SimpleMailMessage constructResendVerificationTokenEmail( String contextPath,  Locale locale,  VerificationToken newToken,  User user) {
         final String confirmationUrl = contextPath + "/registrationConfirm.html?token=" + newToken.getToken();
         final String message = messages.getMessage("message.resendToken", null, locale);
         return constructEmail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
     }
 
-    private SimpleMailMessage constructResetTokenEmail(final String contextPath, final Locale locale, final String token, final User user) {
+    private SimpleMailMessage constructResetTokenEmail( String contextPath,  Locale locale,  String token,  User user) {
         final String url = contextPath + "/changePassword?token=" + token;
         final String message = messages.getMessage("message.resetPassword", null, locale);
         return constructEmail("Reset Password", message + " \r\n" + url, user);

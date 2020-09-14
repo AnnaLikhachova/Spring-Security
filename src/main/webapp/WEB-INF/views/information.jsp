@@ -9,10 +9,12 @@
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
     <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII"/>
-    <title >home</title>
+    <title >Information</title>
 </head>
 <body>
-<h2>Check you email to proceed with registration</h2>
-<div class="navigation-panel-link"><a href="${contextPath}/registration" class="txt1">login</a> </div>
+<div class="container">
+<h2 class="text-center">Check you email to proceed with registration</h2>
+<div class="navigation-panel-link"><a href="${contextPath}/login" class="txt1">login</a> </div>
+</div>
 </body>
 </html>
